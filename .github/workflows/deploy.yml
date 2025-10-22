@@ -16,11 +16,11 @@ jobs:
       - name: Sync files to cPanel via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
+          server: ${{ secrets.CPANEL_FTP_SERVER }}
+          username: ${{ secrets.CPANEL_FTP_USERNAME }}
+          password: ${{ secrets.CPANEL_FTP_PASSWORD }}
           server-dir: ${{ secrets.CPANEL_FTP_DIR }}
-          local-dir: ./ # folder lokal project
+          # local-dir: ./ # folder lokal project
           exclude: |
             */.git
             */.github
