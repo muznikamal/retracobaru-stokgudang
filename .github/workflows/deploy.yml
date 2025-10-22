@@ -1,29 +1,36 @@
-name: Auto Deploy to cPanel
+name: 🚀 Auto Deploy ke Jagoan Hosting
 
 on:
   push:
     branches:
-      - main # jalankan otomatis saat kamu push ke branch main
+      - main # ubah jika branch kamu bukan 'main'
 
 jobs:
-  ftp-deploy:
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
+      - name: 🧭 Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Sync files to cPanel via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: 📦 Install Dependencies
+        run: |
+          # Hanya jika kamu pakai composer
+          if [ -f composer.json ]; then
+            composer install --no-dev --optimize-autoloader
+          fi
+
+      - name: 📤 Upload ke cPanel via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /public_html/ # folder tujuan di cPanel
-          local-dir: ./ # folder lokal project
+          server: ${{ secrets.CPANEL_FTP_SERVER }}
+          username: ${{ secrets.CPANEL_FTP_USERNAME }}
+          password: ${{ secrets.CPANEL_FTP_PASSWORD }}
+          server-dir: ${{ secrets.CPANEL_FTP_DIR }}
           exclude: |
             */.git
             */.github
-            */node_modules/*
-            */vendor/*
+            */node_modules/
+            */vendor/
             **/.env
+            */composer.
+            */.sql
