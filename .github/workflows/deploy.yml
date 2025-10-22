@@ -1,0 +1,29 @@
+name: Auto Deploy to cPanel
+
+on:
+  push:
+    branches:
+      - main # jalankan otomatis saat kamu push ke branch main
+
+jobs:
+  ftp-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Sync files to cPanel via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /public_html/ # folder tujuan di cPanel
+          local-dir: ./ # folder lokal project
+          exclude: |
+            */.git
+            */.github
+            */node_modules/*
+            */vendor/*
+            **/.env
