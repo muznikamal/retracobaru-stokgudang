@@ -51,9 +51,9 @@
                         <tr>
                             <th class="px-4 py-3 text-left">Nama Barang</th>
                             <th class="px-4 py-3 text-center">Total Masuk</th>
-                            <th class="px-4 py-3 text-center">Penjualan</th>
-                            <th class="px-4 py-3 text-center">Kendala</th>
-                            <th class="px-4 py-3 text-center">Total Keluar</th>
+                            <th class="px-4 bg-red-700 py-3 text-center">Penjualan</th>
+                            <th class="px-4 bg-red-700 py-3 text-center">Kendala</th>
+                            <th class="px-4 bg-red-700 py-3 text-center">Total Keluar</th>
                             <th class="px-4 py-3 text-center">Stok Akhir</th>
                         </tr>
                     </thead>

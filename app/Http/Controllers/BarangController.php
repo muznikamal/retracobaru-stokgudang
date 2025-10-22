@@ -74,7 +74,6 @@ class BarangController extends Controller
             ? $request->satuan_manual 
             : $request->satuan;
 
-        // ✅ Simpan barang dan tangkap hasilnya
         $barang = Barang::create([
             'nama_barang' => $request->nama_barang,
             'stok'        => $request->stok,

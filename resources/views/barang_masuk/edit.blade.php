@@ -55,7 +55,7 @@
                         Batal
                     </a>
                     <button type="submit"
-                        class="px-5 py-2 bg-blue-600 text-white rounded-xl shadow hover:bg-blue-700 transition">
+                        class="px-5 py-2 bg-emerald-600 text-white rounded-xl shadow hover:bg-emerald-700 transition">
                         Simpan
                     </button>
                 </div>

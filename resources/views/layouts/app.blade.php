@@ -75,12 +75,9 @@
                         class="md:hidden text-gray-600 hover:text-gray-800 focus:outline-none transition">
                         <span class="material-icons text-2xl">menu</span>
                     </button>
-
-                    <!-- Page Title -->
-                    <h2 class="text-lg sm:text-xl font-semibold text-gray-700 truncate max-w-[60%] sm:max-w-none">
+                    <h2 class="text-lg sm:text-xl font-semibold text-center text-gray-700 truncate max-w-[60%] sm:max-w-none">
                         @yield('title')
                     </h2>
-
                     <!-- User Menu -->
                     <div class="flex items-center gap-3 sm:gap-4">
                         <span class="hidden sm:inline text-gray-600 text-sm truncate max-w-[100px]">
@@ -100,7 +97,7 @@
             <!-- Content -->
             <!-- Main Content Area -->
             <div class="flex-1 md:ml-64 min-h-screen">
-                
+
 
                 <!-- Main Content -->
                 <main class="flex-1 p-4 sm:p-6 overflow-x-hidden">

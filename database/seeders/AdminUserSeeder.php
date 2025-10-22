@@ -25,10 +25,6 @@ class AdminUserSeeder extends Seeder
             'barang.edit',
             'barang.delete',
 
-            // Laporan
-            'laporan.view',
-            'laporan.export',
-
             // User & Device (opsional, kalau kamu punya fitur ini)
             'user.manage',
             'device.approve',
@@ -43,11 +39,9 @@ class AdminUserSeeder extends Seeder
         $adminRole->syncPermissions(Permission::all());
 
         // Staff hanya boleh lihat & ekspor laporan
-        $staffRole->syncPermissions([
-            'barang.view',
-            'laporan.view',
-            'laporan.export',
-        ]);
+        // $staffRole->syncPermissions([
+        //     'barang.view'
+        // ]);
 
         // Buat user admin default
         $admin = User::firstOrCreate(

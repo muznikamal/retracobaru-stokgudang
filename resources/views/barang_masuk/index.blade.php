@@ -159,6 +159,16 @@
 
                     <tbody class="divide-y text-gray-700">
                         @forelse ($data as $i => $row)
+                        @php
+                            $isAdmin = auth()->user()->hasRole('admin');
+                            $isStaff = auth()->user()->hasRole('staff');
+
+                            $canEdit =
+                                $isAdmin ||
+                                ($isStaff &&
+                                    $row->user_id == auth()->id() &&
+                                    now()->diffInHours($row->created_at->setTimezone(config('app.timezone'))) <= 24);
+                        @endphp
                             <tr class="hover:bg-gray-50 transition">
                                 <td class="p-3 text-center">{{ $i + 1 }}</td>
                                 <td class="p-3">{{ $row->nama_petugas }}</td>
@@ -176,33 +186,35 @@
                                 </td>
                                 <td class="p-3 text-left">{{ $row->user->name }}</td>
                                 <td class="p-3 text-center">{{ $row->created_at->format('d M Y') }}</td>
-                                <td class="p-3 text-center flex gap-2 justify-center">
-                                    @if (auth()->user()->hasRole('admin') ||
-                                            (auth()->user()->hasRole('staff') && now()->diffInHours($row->created_at) <= 24))
-                                        <div class="flex gap-3 mt-3">
-                                            {{-- Tombol Edit --}}
+
+                                <td class="p-3 text-center">
+                                    <div class="flex justify-center gap-3 mt-3">
+                                        {{-- Tombol Edit --}}
+                                        @if ($canEdit)
                                             <a href="{{ route('barang-masuk.edit', $row->id) }}"
-                                                class="p-1.5 
-                   {{ now()->diffInHours($row->created_at) <= 24 ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-400 cursor-not-allowed' }} 
-                   text-white rounded-md text-sm
-                   transition duration-150">
+                                                class="p-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-md text-sm transition duration-150">
                                                 <span class="material-symbols-outlined text-sm">edit</span>
                                             </a>
+                                        @else
+                                            <button disabled
+                                                class="p-1.5 bg-gray-300 text-gray-500 rounded-md text-sm cursor-not-allowed"
+                                                title="Hanya dapat mengedit data milik sendiri (maks. 24 jam)">
+                                                <span class="material-symbols-outlined text-sm">edit</span>
+                                            </button>
+                                        @endif
 
-                                            {{-- Tombol Hapus (tetap hanya admin) --}}
-                                            @if (auth()->user()->hasRole('admin'))
-                                                <form action="{{ route('barang-masuk.destroy', $row->id) }}"
-                                                    method="POST" onsubmit="return confirm('Yakin ingin hapus data?')"
-                                                    class="inline">
-                                                    @csrf @method('DELETE')
-                                                    <button type="submit"
-                                                        class="p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm transition">
-                                                        <span class="material-symbols-outlined text-sm">delete</span>
-                                                    </button>
-                                                </form>
-                                            @endif
-                                        </div>
-                                    @endif
+                                        {{-- Tombol Hapus (hanya admin) --}}
+                                        @if ($isAdmin)
+                                            <form action="{{ route('barang-masuk.destroy', $row->id) }}" method="POST"
+                                                onsubmit="return confirm('Yakin ingin hapus data?')" class="inline">
+                                                @csrf @method('DELETE')
+                                                <button type="submit"
+                                                    class="p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm transition">
+                                                    <span class="material-symbols-outlined text-sm">delete</span>
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @empty
@@ -245,14 +257,13 @@
                             @endif
 
                             @if (auth()->user()->hasRole('admin') ||
-                                    (auth()->user()->hasRole('staff') && now()->diffInHours($row->created_at) <= 24))
+                                    (auth()->user()->hasRole('staff') &&
+                                        $row->user_id == auth()->id() &&
+                                        now()->diffInHours($row->created_at) <= 24))
                                 <div class="flex gap-3 mt-3">
                                     {{-- Tombol Edit --}}
                                     <a href="{{ route('barang-masuk.edit', $row->id) }}"
-                                        class="flex items-center gap-1 px-3 py-1 
-                   {{ now()->diffInHours($row->created_at) <= 24 ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-400 cursor-not-allowed' }} 
-                   text-white rounded-md text-sm
-                   transition duration-150">
+                                        class="flex items-center gap-1 px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-md text-sm transition duration-150">
                                         <span class="material-symbols-outlined text-sm">edit</span> Edit
                                     </a>
 
@@ -260,13 +271,23 @@
                                     @if (auth()->user()->hasRole('admin'))
                                         <form action="{{ route('barang-masuk.destroy', $row->id) }}" method="POST"
                                             onsubmit="return confirm('Yakin ingin hapus data?')" class="inline">
-                                            @csrf @method('DELETE')
+                                            @csrf
+                                            @method('DELETE')
                                             <button type="submit"
                                                 class="flex items-center gap-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm transition">
                                                 <span class="material-symbols-outlined text-sm">delete</span> Hapus
                                             </button>
                                         </form>
                                     @endif
+                                </div>
+                            @else
+                                {{-- Tampilan disable edit --}}
+                                <div class="gap-3 mt-3">
+                                    <button disabled
+                                        class="flex  gap-1 px-3 py-1 bg-gray-300 text-gray-500 rounded-md text-sm cursor-not-allowed"
+                                        title="Anda tidak memiliki izin untuk mengedit data ini">
+                                        <span class="material-symbols-outlined text-sm">edit</span> Edit
+                                    </button>
                                 </div>
                             @endif
                         </div>
@@ -293,62 +314,53 @@
             </div>
 
             {{-- MODAL FILTER LANJUTAN (MOBILE ONLY) --}}
-            <div x-show="openAdvanced" x-transition.opacity.duration.200ms
-                x-init="$watch('openAdvanced', val => document.body.style.overflow = val ? 'hidden' : 'auto')"
-                class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                <div @click.away="openAdvanced = false" x-transition.scale.origin.center.duration.200ms
-                    class="bg-white w-11/12 max-w-md rounded-2xl p-6 shadow-2xl relative">
-                    <!-- Tombol close -->
-                    <button @click="openAdvanced = false"
+            <div x-show="openAdvanced" x-transition.opacity.duration.200ms x-init="$watch('openAdvanced', val => document.body.style.overflow = val ? 'hidden' : 'auto')"
+                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div @click.away="openAdvanced = false"
+                    class="relative bg-white w-11/12 max-w-md rounded-2xl p-5 shadow-lg overflow-y-auto max-h-[90vh]"> <!-- Tambahkan ini -->
+                    {{-- Tombol Close --}}
+                    <button type="button" @click="openAdvanced = false"
                         class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                        ✕
                     </button>
 
-                    <h3 class="text-lg font-semibold mb-5 text-gray-800 border-b pb-2">
-                        Filter Lanjutan
-                    </h3>
+                    <h3 class="text-lg font-semibold mb-5 text-gray-800 text-center">Filter Lanjutan</h3>
 
-                    <!-- Filter form -->
+                    {{-- Filter form --}}
                     <form action="{{ route('barang-masuk.index') }}" method="GET" class="space-y-4 text-sm">
 
-                        <!-- Tanggal -->
+                        {{-- Tanggal --}}
                         <div>
                             <label class="font-medium text-gray-700">Tanggal</label>
                             <div class="flex items-center gap-2 mt-1">
                                 <input type="date" name="tanggal_mulai" value="{{ request('tanggal_mulai') }}"
-                                    class="border border-gray-300 rounded-lg px-3 py-2 w-1/2 focus:ring-2 focus:ring-emerald-400 focus:outline-none">
-                                <span class="text-gray-500">s/d</span>
+                                    class="border rounded-xl px-3 py-2 w-1/2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                                <span class="text-gray-600">s/d</span>
                                 <input type="date" name="tanggal_selesai" value="{{ request('tanggal_selesai') }}"
-                                    class="border border-gray-300 rounded-lg px-3 py-2 w-1/2 focus:ring-2 focus:ring-emerald-400 focus:outline-none">
+                                    class="border rounded-xl px-3 py-2 w-1/2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
                             </div>
                         </div>
 
-                        <!-- Nama PO -->
-                        <x-select-dropdown name="filter_petugas" label="Nama PO/Cost" :options="collect($namaPetugasList)->map(fn($item) => ['value' => $item, 'label' => $item])"
-                            selected="{{ request('filter_petugas') }}" placeholder="Semua" />
+                        {{-- Nama PO --}}
+                        <x-select-dropdown-search name="filter_petugas" label="Nama PO/Cost" :options="$namaPetugasList->map(fn($p) => ['value' => $p, 'label' => $p])" :selected="request('filter_petugas')"
+                            placeholder="Semua" />
 
+                        {{-- Barang --}}
+                        <x-select-dropdown-search name="filter_barang" label="Barang" :options="$barangList->map(fn($b) => ['value' => $b, 'label' => $b])" :selected="request('filter_barang')"
+                            placeholder="Semua" />
 
-                        <!-- Barang -->
-                        <x-select-dropdown name="filter_barang" label="Barang" :options="collect($barangList)->map(fn($item) => ['value' => $item, 'label' => $item])"
-                            selected="{{ request('filter_barang') }}" placeholder="Semua" />
+                        {{-- User Input --}}
+                        <x-select-dropdown-search name="filter_user" label="User Input" :options="$userList->map(fn($u) => ['value' => $u, 'label' => $u])" :selected="request('filter_user')"
+                            placeholder="Semua" />
 
-
-                        <!-- User Input -->
-                        <x-select-dropdown name="filter_user" label="User Input" :options="collect($userList)->map(fn($item) => ['value' => $item, 'label' => $item])"
-                            selected="{{ request('filter_user') }}" placeholder="Semua" />
-
-
-                        <!-- Tombol aksi -->
-                        <div class="flex justify-end gap-3 pt-4 border-t mt-5">
+                        {{-- Tombol Aksi --}}
+                        <div class="flex justify-end gap-3 mt-6">
                             <a href="{{ route('barang-masuk.index') }}"
-                                class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
+                                class="px-4 py-2 bg-gray-200 rounded-lg text-gray-700 hover:bg-gray-300 transition">
                                 Reset
                             </a>
                             <button type="submit"
-                                class="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 shadow-md transition">
+                                class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition">
                                 Terapkan
                             </button>
                         </div>

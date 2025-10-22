@@ -5,6 +5,9 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use App\Models\UserDevice;
+use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class CheckDevice
 {
@@ -15,20 +18,18 @@ class CheckDevice
             return redirect()->route('login');
         }
 
-        // Jika admin → skip pemeriksaan
+        // Admin dilewatkan
         if ($user->hasRole('admin')) {
             return $next($request);
         }
 
         $userAgent = $request->userAgent();
-        // $ip = $request->ip();
-        // $deviceToken = hash('sha256', $userAgent . $ip);
         $deviceToken = $request->cookie('device_token');
 
+        // Jika belum ada cookie device, buat baru
         if (!$deviceToken) {
-            $deviceToken = hash('sha256', $request->userAgent() . \Illuminate\Support\Str::uuid());
+            $deviceToken = hash('sha256', $userAgent . Str::uuid());
         }
-
 
         // Cek atau buat device baru
         $device = UserDevice::firstOrCreate(
@@ -45,12 +46,9 @@ class CheckDevice
             ]
         );
 
-
         // Jika belum disetujui
         if (!$device->is_approved) {
             auth()->logout();
-            // $request->session()->invalidate();
-            // $request->session()->regenerateToken();
 
             return redirect()
                 ->route('login')
@@ -58,13 +56,18 @@ class CheckDevice
                 ->withCookie(cookie()->forever('device_token', $deviceToken));
         }
 
-        // Update status login terakhir
+        // Update aktivitas device
         $device->update([
             'last_login_at' => now(),
-            'ip_address' => $request->ip(),
+            'ip_address'    => $request->ip(),
         ]);
 
-        return $next($request)
-            ->withCookie(cookie()->forever('device_token', $deviceToken));
+        $response = $next($request);
+
+        if ($response instanceof BinaryFileResponse || $response instanceof StreamedResponse) {
+            return $response;
+        }
+
+        return $response->withCookie(cookie()->forever('device_token', $deviceToken));
     }
 }

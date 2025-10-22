@@ -26,7 +26,7 @@ Route::middleware(['auth', 'check.device'])->group(function () {
         Route::put('devices/{device}/approve', [DeviceController::class,'approve'])->name('devices.approve');
         Route::delete('devices/{device}/reject', [DeviceController::class,'reject'])->name('devices.reject');
 
-        Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
+        // Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
         
 
         Route::resource('barang-masuk', BarangMasukController::class)->except(['show']);
@@ -40,7 +40,8 @@ Route::middleware(['auth', 'check.device'])->group(function () {
         Route::resource('barang', BarangController::class);
         Route::resource('barang-masuk', BarangMasukController::class)->only(['index','create','store','update','edit']);
         Route::resource('barang-keluar', BarangKeluarController::class)->only(['index','create','store','update','edit']);
-        Route::get('laporan/excel', [LaporanController::class, 'exportExcel'])->name('laporan.export.excel');
+        Route::get('laporan/excel', [LaporanController::class, 'exportExcel'])->name('laporan.export.excel')
+            ->withoutMiddleware([\Illuminate\Session\Middleware\AuthenticateSession::class]);
         Route::get('laporan/pdf', [LaporanController::class, 'exportPdf'])->name('laporan.export.pdf');
     });
 });
