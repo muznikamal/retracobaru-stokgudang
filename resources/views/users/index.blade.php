@@ -44,11 +44,21 @@
                                     </span>
                                 @else
                                     <span
-                                        class="inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700">
-                                        <span class="material-symbols-outlined text-xs">person</span> Staff
+                                        class="inline-flex items-center gap-2 px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700">
+                                        <span class="material-symbols-outlined text-xs">person</span>
+                                        Staff
+                                        @if (
+                                            $user->hasPermissionTo('barang.create') ||
+                                                $user->hasPermissionTo('barang.edit') ||
+                                                $user->hasPermissionTo('barang.delete'))
+                                            <span class="w-2.5 h-2.5 bg-green-500 rounded-full inline-block"></span>
+                                        @else
+                                            <span class="w-2.5 h-2.5 bg-red-500 rounded-full inline-block"></span>
+                                        @endif
                                     </span>
                                 @endif
                             </td>
+
                             <td class="px-4 py-3 space-y-1">
                                 @forelse ($user->devices as $d)
                                     <div class="text-xs flex items-center gap-1 text-gray-600">

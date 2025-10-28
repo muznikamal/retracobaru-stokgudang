@@ -5,6 +5,7 @@ use App\Models\User;
 use App\Models\UserDevice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -16,7 +17,8 @@ class UserController extends Controller
 
     public function create()
     {
-        return view('users.create');
+        $roles = Role::all(); // ambil semua role
+        return view('users.create', compact('roles'));
     }
 
     public function store(Request $request)
