@@ -49,7 +49,7 @@ class BarangController extends Controller
                 $query->latest();
         }
 
-        $barang = $query->paginate(10)->appends($request->query());
+        $barang = $query->paginate(20)->appends($request->query());
 
         return view('barang.index', compact('barang', 'kategoriList'));
     }

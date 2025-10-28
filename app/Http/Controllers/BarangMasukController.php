@@ -54,7 +54,7 @@ class BarangMasukController extends Controller
             $query->latest();
         }
 
-        $data = $query->paginate(10);
+        $data = $query->paginate(20);
 
         // Untuk dropdown
         $namaPetugasList = BarangMasuk::select('nama_petugas')->distinct()->pluck('nama_petugas');

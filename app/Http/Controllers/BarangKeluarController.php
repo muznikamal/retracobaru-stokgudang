@@ -82,7 +82,7 @@ class BarangKeluarController extends Controller
         }
 
         // 🔢 Pagination
-        $data = $query->paginate(10)->appends($request->query());
+        $data = $query->paginate(20)->appends($request->query());
 
         // --- Data untuk dropdown filter ---
         $barangList      = Barang::orderBy('nama_barang')->pluck('nama_barang');

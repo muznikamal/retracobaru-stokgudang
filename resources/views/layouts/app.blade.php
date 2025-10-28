@@ -28,16 +28,6 @@
 
     <div class="min-h-screen flex flex-col md:flex-row">
 
-        <!-- Sidebar -->
-        {{-- <aside
-            class="fixed md:static inset-y-0 left-0 w-64 bg-white 
-           md:shadow-lg md:shadow-gray-300 z-40 
-           transform -translate-x-full md:translate-x-0 
-           transition-transform duration-300 ease-in-out 
-           md:border-r border-gray-200"
-            id="mobileSidebar">
-            @include('layouts.sidebar')
-        </aside> --}}
 
         <!-- Mobile Sidebar -->
         <div class="md:hidden">
