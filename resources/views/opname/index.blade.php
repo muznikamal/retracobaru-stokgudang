@@ -21,6 +21,7 @@
 
         {{-- DROPDOWN BARANG --}}
         <div class="flex-1" x-ref="dropdownWrapper">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Barang</label>
             <x-dropdown-search
                 name="barang_id"
                 label="Barang"
