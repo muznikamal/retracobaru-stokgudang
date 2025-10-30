@@ -21,7 +21,6 @@ class BarangOpnameController extends Controller
         $request->validate([
             'barang_id' => 'required|exists:barangs,id',
             'stok_fisik' => 'required|integer|min:0',
-            'keterangan' => 'nullable|string',
         ]);
 
         $barang = Barang::findOrFail($request->barang_id);
@@ -36,7 +35,6 @@ class BarangOpnameController extends Controller
             'stok_sistem' => $stok_sistem,
             'stok_fisik'  => $stok_fisik,
             'selisih'     => $selisih,
-            'keterangan'  => $request->keterangan,
             'user_id'     => auth()->id(),
         ]);
 
@@ -49,8 +47,7 @@ class BarangOpnameController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'stok_fisik' => 'required|integer|min:0',
-            'keterangan' => 'nullable|string',
+            'stok_fisik' => 'required|integer|min:0'
         ]);
 
         $opname = BarangOpname::findOrFail($id);
@@ -63,7 +60,6 @@ class BarangOpnameController extends Controller
         $opname->update([
             'stok_fisik' => $request->stok_fisik,
             'selisih'    => $selisih_baru,
-            'keterangan' => $request->keterangan,
         ]);
 
         // ✅ Update stok barang agar sesuai dengan hasil opname baru
