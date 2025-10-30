@@ -1,9 +1,9 @@
 @extends('layouts.app')
 @section('title', 'Laporan Barang')
 @section('content')
+
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white shadow rounded-xl p-6">
-
             {{-- HEADER --}}
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
@@ -50,41 +50,39 @@
                     <thead class="bg-emerald-600 text-white text-xs uppercase tracking-wide">
                         <tr>
                             <th class="px-4 py-3 text-left">Nama Barang</th>
-                            <th class="px-4 py-3 text-center">Total Masuk</th>
-                            <th class="px-4 bg-red-700 py-3 text-center">Penjualan</th>
-                            <th class="px-4 bg-red-700 py-3 text-center">Kendala</th>
-                            <th class="px-4 bg-red-700 py-3 text-center">Total Keluar</th>
-                            <th class="px-4 py-3 text-center">Stok Akhir</th>
+                            <th class="px-4 py-3 text-center bg-green-700">Total Masuk</th>
+                            <th class="px-4 py-3 text-center bg-red-800">Total Penjualan</th>
+                            <th class="px-4 py-3 text-center bg-red-800">Total Kendala</th>
+                            <th class="px-4 py-3 text-center bg-red-800">Total Keluar</th>
+                            <th class="px-4 py-3 text-center bg-yellow-600">Selisih Opname</th>
+                            <th class="px-4 py-3 text-center bg-black">Stok Akhir</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200">
-                        @forelse ($data as $item)
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="px-4 py-3 font-medium">{{ $item['nama_barang'] }}</td>
-                                <td class="px-4 py-3 text-center text-green-600 font-semibold">{{ $item['total_masuk'] }}
+                    <tbody>
+                        @foreach ($data as $item)
+                            <tr class="border-t font-bold hover:bg-gray-50 transition">
+                                <td class="px-4 py-3">{{ $item['nama_barang'] }}</td>
+                                <td class="px-4 py-3 text-center text-green-600 ">{{ $item['total_masuk'] }}
                                 </td>
-                                <td class="px-4 py-3 text-center text-blue-600 font-semibold">{{ $item['total_penjualan'] }}
+                                <td class="px-4 py-3 text-center text-blue-600 ">{{ $item['total_penjualan'] }}
                                 </td>
-                                <td class="px-4 py-3 text-center text-yellow-600 font-semibold">{{ $item['total_kendala'] }}
+                                <td class="px-4 py-3 text-center text-amber-600 ">{{ $item['total_kendala'] }}
                                 </td>
-                                <td class="px-4 py-3 text-center text-red-600 font-semibold">{{ $item['total_keluar'] }}
+                                <td class="px-4 py-3 text-center text-red-600 ">{{ $item['total_keluar'] }}
                                 </td>
+                                <td class="px-4 py-3 text-center text-yellow-600 ">
+                                    {{ $item['total_selisih_opname'] }}</td>
                                 <td class="px-4 py-3 text-center font-bold text-gray-800">{{ $item['stok'] }}</td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center py-6 text-gray-500">
-                                    <span class="material-symbols-outlined align-middle text-gray-400 text-xl">info</span>
-                                    Tidak ada data untuk periode ini
-                                </td>
-                            </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
+
+
                 </table>
             </div>
 
             {{-- RINGKASAN TOTAL --}}
-            @if ($data->count() > 0)
+            {{-- @if ($data->count() > 0)
                 <div
                     class="mt-8 bg-gradient-to-br from-emerald-50 to-white rounded-2xl shadow-lg border border-emerald-100 p-6">
                     <div class="flex justify-between items-center mb-6">
@@ -95,76 +93,22 @@
                         <span class="text-sm text-gray-500">Periode: {{ $from }} - {{ $to }}</span>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-5"> --}}
                         {{-- Total Masuk --}}
-                        <div
-                            class="relative bg-white hover:bg-emerald-50 transition-all duration-300 rounded-xl p-5 shadow-sm border border-gray-100 group">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-gray-500 text-sm font-medium">Total Masuk</p>
-                                    <h4 class="text-2xl font-bold text-emerald-600 mt-1">{{ $totalSummary['masuk'] }}</h4>
-                                </div>
-                                <span
-                                    class="material-symbols-outlined text-emerald-500 text-3xl group-hover:scale-110 transition-transform">inventory_2</span>
-                            </div>
-                        </div>
-
+                        {{-- <x-summary-card color="emerald" icon="inventory_2" label="Total Masuk" :value="$totalSummary['masuk']" /> --}}
                         {{-- Penjualan --}}
-                        <div
-                            class="relative bg-white hover:bg-blue-50 transition-all duration-300 rounded-xl p-5 shadow-sm border border-gray-100 group">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-gray-500 text-sm font-medium">Penjualan</p>
-                                    <h4 class="text-2xl font-bold text-blue-600 mt-1">{{ $totalSummary['penjualan'] }}</h4>
-                                </div>
-                                <span
-                                    class="material-symbols-outlined text-blue-500 text-3xl group-hover:scale-110 transition-transform">shopping_cart</span>
-                            </div>
-                        </div>
-
+                        {{-- <x-summary-card color="blue" icon="shopping_cart" label="Penjualan" :value="$totalSummary['penjualan']" /> --}}
                         {{-- Kendala --}}
-                        <div
-                            class="relative bg-white hover:bg-amber-50 transition-all duration-300 rounded-xl p-5 shadow-sm border border-gray-100 group">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-gray-500 text-sm font-medium">Kendala</p>
-                                    <h4 class="text-2xl font-bold text-amber-600 mt-1">{{ $totalSummary['kendala'] }}</h4>
-                                </div>
-                                <span
-                                    class="material-symbols-outlined text-amber-500 text-3xl group-hover:scale-110 transition-transform">report_problem</span>
-                            </div>
-                        </div>
-
+                        {{-- <x-summary-card color="amber" icon="report_problem" label="Kendala" :value="$totalSummary['kendala']" /> --}}
                         {{-- Total Keluar --}}
-                        <div
-                            class="relative bg-white hover:bg-rose-50 transition-all duration-300 rounded-xl p-5 shadow-sm border border-gray-100 group">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-gray-500 text-sm font-medium">Total Keluar</p>
-                                    <h4 class="text-2xl font-bold text-rose-600 mt-1">{{ $totalSummary['keluar'] }}</h4>
-                                </div>
-                                <span
-                                    class="material-symbols-outlined text-rose-500 text-3xl group-hover:scale-110 transition-transform">logout</span>
-                            </div>
-                        </div>
-
+                        {{-- <x-summary-card color="rose" icon="logout" label="Total Keluar" :value="$totalSummary['keluar']" /> --}}
+                        {{-- Selisih --}}
+                        {{-- <x-summary-card color="amber" icon="difference" label="Selisih Total" :value="$totalSummary['selisih'] ?? 0" /> --}}
                         {{-- Stok Akhir --}}
-                        <div
-                            class="relative bg-white hover:bg-gray-50 transition-all duration-300 rounded-xl p-5 shadow-sm border border-gray-100 group">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-gray-500 text-sm font-medium">Stok Akhir</p>
-                                    <h4 class="text-2xl font-bold text-gray-800 mt-1">{{ $totalSummary['stok'] }}</h4>
-                                </div>
-                                <span
-                                    class="material-symbols-outlined text-gray-600 text-3xl group-hover:scale-110 transition-transform">inventory</span>
-                            </div>
-                        </div>
-                    </div>
+                        {{-- <x-summary-card color="gray" icon="inventory" label="Stok Akhir" :value="$totalSummary['stok']" /> --}}
+                    {{-- </div>
                 </div>
-            @endif
-
-
+            @endif --}}
         </div>
     </div>
 @endsection

@@ -5,11 +5,10 @@ namespace App\Exports;
 use App\Models\Barang;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithTitle;
-use Illuminate\Contracts\View\View;
-use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class LaporanExport implements FromView, WithTitle
+class LaporanExport implements FromCollection, WithHeadings, WithStyles
 {
     protected $from;
     protected $to;
@@ -20,32 +19,63 @@ class LaporanExport implements FromView, WithTitle
         $this->to = $to;
     }
 
-    public function view(): View
+    public function collection()
     {
-        $from = $this->from;
-        $to   = $this->to;
+        return Barang::with(['barangMasuk', 'barangKeluar', 'opname'])
+        ->orderBy('nama_barang', 'asc')
+        ->get()
+        ->map(function ($barang) {
+            $totalMasuk = $barang->barangMasuk()
+                ->whereBetween('created_at', [$this->from, $this->to])
+                ->sum('jumlah');
 
-        $data = Barang::with(['barangMasuk', 'barangKeluar'])->get()->map(function ($barang) use ($from, $to) {
-            $totalMasuk = $barang->barangMasuk()->whereBetween('created_at', [$from, $to])->sum('jumlah');
-            $penjualan  = $barang->barangKeluar()->where('tipe_keluar', 'penjualan')->whereBetween('created_at', [$from, $to])->sum('jumlah');
-            $kendala    = $barang->barangKeluar()->where('tipe_keluar', 'kendala')->whereBetween('created_at', [$from, $to])->sum('jumlah');
+            $penjualan = $barang->barangKeluar()
+                ->where('tipe_keluar', 'penjualan')
+                ->whereBetween('created_at', [$this->from, $this->to])
+                ->sum('jumlah');
+
+            $kendala = $barang->barangKeluar()
+                ->where('tipe_keluar', 'kendala')
+                ->whereBetween('created_at', [$this->from, $this->to])
+                ->sum('jumlah');
+
             $totalKeluar = $penjualan + $kendala;
 
+            // Ambil opname terakhir
+            $selisihOpname = optional($barang->opname()->latest()->first())->selisih ?? 0;
+
             return [
-                'nama_barang' => $barang->nama_barang,
-                'total_masuk' => $totalMasuk,
-                'penjualan'   => $penjualan,
-                'kendala'     => $kendala,
-                'total_keluar'=> $totalKeluar,
-                'stok'        => $barang->stok,
+                'nama_barang'     => $barang->nama_barang,
+                'total_masuk'     => $totalMasuk,
+                'penjualan'       => $penjualan,
+                'kendala'         => $kendala,
+                'total_keluar'    => $totalKeluar,
+                'selisih_opname'  => $selisihOpname,
+                'stok_akhir'      => $barang->stok,
             ];
         });
-
-        return view('laporan.excel', compact('data', 'from', 'to'));
     }
 
-    public function title(): string
+    public function headings(): array
     {
-        return 'Laporan Barang';
+        return [
+            'Nama Barang',
+            'Total Masuk',
+            'Penjualan',
+            'Kendala',
+            'Total Keluar',
+            'Selisih Opname',
+            'Stok Akhir',
+        ];
+    }
+
+    public function styles(Worksheet $sheet)
+    {
+        $sheet->getStyle('A1:G1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:G1')->getFill()->setFillType('solid')->getStartColor()->setARGB('16A34A');
+        $sheet->getStyle('A1:G1')->getFont()->getColor()->setARGB('FFFFFF');
+        $sheet->getStyle('A:G')->getAlignment()->setHorizontal('center');
+        $sheet->getColumnDimension('A')->setWidth(25);
+        return [];
     }
 }

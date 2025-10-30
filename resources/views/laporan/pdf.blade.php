@@ -74,6 +74,7 @@
                 <th>Penjualan</th>
                 <th>Kendala</th>
                 <th>Total Keluar</th>
+                <th>Selisih Opname</th>
                 <th>Stok Akhir</th>
             </tr>
         </thead>
@@ -85,11 +86,12 @@
                     <td>{{ $item['penjualan'] }}</td>
                     <td>{{ $item['kendala'] }}</td>
                     <td>{{ $item['total_keluar'] }}</td>
+                    <td>{{ $item['selisih_opname'] ?? 0 }}</td>
                     <td>{{ $item['stok'] }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6">Tidak ada data untuk periode ini.</td>
+                    <td colspan="7">Tidak ada data untuk periode ini.</td>
                 </tr>
             @endforelse
         </tbody>

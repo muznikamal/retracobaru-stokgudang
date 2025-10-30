@@ -6,6 +6,7 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\BarangMasukController;
 use App\Http\Controllers\BarangKeluarController;
 use App\Http\Controllers\BarangController;
+use App\Http\Controllers\BarangOpnameController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,9 +23,12 @@ Route::middleware(['auth', 'check.device'])->group(function () {
     Route::middleware(['role:admin'])->group(function () {
         Route::resource('users', UserController::class);
         Route::resource('barang', BarangController::class);
+        Route::resource('opname', BarangOpnameController::class);
         Route::resource('devices', DeviceController::class)->except(['create','store']); 
         Route::put('devices/{device}/approve', [DeviceController::class,'approve'])->name('devices.approve');
         Route::delete('devices/{device}/reject', [DeviceController::class,'reject'])->name('devices.reject');
+        Route::get('/opname', [App\Http\Controllers\BarangOpnameController::class, 'index'])->name('opname.index');
+        Route::post('/opname', [App\Http\Controllers\BarangOpnameController::class, 'store'])->name('opname.store');
 
         // Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
         
