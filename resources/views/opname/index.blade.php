@@ -90,7 +90,7 @@
                         <td class="px-4 py-3 text-center">
                             <div class="flex justify-center gap-2">
                                 <button @click="editModal({{ $opname->id }}, '{{ $opname->stok_fisik }}')"
-                                        class="flex items-center gap-1 px-3 py-1 bg-blue-400 hover:bg-blue-500 text-white rounded-lg text-xs font-medium shadow-sm transition">
+                                        class="flex items-center gap-1 px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-xs font-medium shadow-sm transition">
                                     <span class="material-symbols-outlined text-sm">edit</span>Edit
                                 </button>
                                 <form action="{{ route('opname.destroy', $opname->id) }}" method="POST"
