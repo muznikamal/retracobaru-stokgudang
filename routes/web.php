@@ -23,7 +23,7 @@ Route::middleware(['auth', 'check.device'])->group(function () {
     Route::middleware(['role:admin'])->group(function () {
         Route::resource('users', UserController::class);
         Route::resource('barang', BarangController::class);
-        Route::resource('opname', BarangOpnameController::class);
+        
         Route::resource('devices', DeviceController::class)->except(['create','store']); 
         Route::put('devices/{device}/approve', [DeviceController::class,'approve'])->name('devices.approve');
         Route::delete('devices/{device}/reject', [DeviceController::class,'reject'])->name('devices.reject');
@@ -47,6 +47,7 @@ Route::middleware(['auth', 'check.device'])->group(function () {
         Route::get('laporan/excel', [LaporanController::class, 'exportExcel'])->name('laporan.export.excel')
             ->withoutMiddleware([\Illuminate\Session\Middleware\AuthenticateSession::class]);
         Route::get('laporan/pdf', [LaporanController::class, 'exportPdf'])->name('laporan.export.pdf');
+        Route::resource('opname', BarangOpnameController::class);
     });
 });
 

@@ -25,6 +25,12 @@ class AdminUserSeeder extends Seeder
             'barang.edit',
             'barang.delete',
 
+            // Opname
+            'opname.view',
+            'opname.create',
+            'opname.edit',
+            'opname.delete',
+
             // User & Device (opsional, kalau kamu punya fitur ini)
             'user.manage',
             'device.approve',
@@ -32,20 +38,20 @@ class AdminUserSeeder extends Seeder
 
         // Buat permission jika belum ada
         foreach ($permissions as $perm) {
-            Permission::firstOrCreate(['name' => $perm]);
+            Permission::firstOrCreate(['name' => $perm, 'guard_name' => 'web']);
         }
 
         // Beri semua izin ke admin
         $adminRole->syncPermissions(Permission::all());
 
-        // Staff hanya boleh lihat & ekspor laporan
-        // $staffRole->syncPermissions([
-        //     'barang.view'
-        // ]);
+        // Hak akses default staff
+        $staffRole->syncPermissions([
+            'barang.view',
+        ]);
 
         // Buat user admin default
         $admin = User::firstOrCreate(
-            ['username' => 'admin'], // gunakan username
+            ['username' => 'admin'],
             [
                 'name' => 'Administrator',
                 'password' => Hash::make('qwe123'),
@@ -73,7 +79,7 @@ class AdminUserSeeder extends Seeder
         );
 
         // Pesan console
-        $this->command->info('✅ Admin user dan permission berhasil disetup!');
+        $this->command->info('✅ Admin user, role, dan permission berhasil disetup!');
         $this->command->info('🧍 Username: admin');
         $this->command->info('🔐 Password: qwe123');
     }

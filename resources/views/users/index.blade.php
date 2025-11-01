@@ -50,7 +50,11 @@
                                         @if (
                                             $user->hasPermissionTo('barang.create') ||
                                                 $user->hasPermissionTo('barang.edit') ||
-                                                $user->hasPermissionTo('barang.delete'))
+                                                $user->hasPermissionTo('barang.delete') ||
+                                                $user->hasPermissionTo('opname.view') ||
+                                                $user->hasPermissionTo('opname.create') ||
+                                                $user->hasPermissionTo('opname.edit') ||
+                                                $user->hasPermissionTo('opname.delete'))
                                             <span class="w-2.5 h-2.5 bg-green-500 rounded-full inline-block"></span>
                                         @else
                                             <span class="w-2.5 h-2.5 bg-red-500 rounded-full inline-block"></span>

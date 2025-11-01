@@ -53,7 +53,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'username' => 'required|string|unique:users,username,' . $user->id,
             'password' => 'nullable|min:6',
-            'role' => 'required'
+            'role' => 'required|in:admin,staff', // batasi hanya 2 role
         ]);
 
         $data = $request->only('name', 'username');
@@ -62,13 +62,24 @@ class UserController extends Controller
             $data['password'] = bcrypt($request->password);
         }
 
+        // Update data user
         $user->update($data);
 
+        // Update role
         $user->syncRoles([$request->role]);
-        $user->syncPermissions($request->permissions ?? []);
+
+        // Logika permission berdasarkan role
+        if ($request->role === 'staff') {
+            // Staff hanya dapat permission yang dicentang
+            $user->syncPermissions($request->permissions ?? []);
+        } else {
+            // Admin otomatis dapat semua permission
+            $user->syncPermissions([]);
+        }
 
         return redirect()->route('users.index')->with('success', 'User berhasil diperbarui.');
     }
+
 
     public function destroy(User $user)
     {

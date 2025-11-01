@@ -9,9 +9,11 @@
                 open: false,
                 selectedValue: '{{ $user->roles->first()->name ?? '' }}',
                 selectedLabel: '{{ ucfirst($user->roles->first()->name ?? 'Pilih Role') }}',
+                openCard: null,
                 options: [
                     @foreach ($roles as $role)
-                { value: '{{ $role->name }}', label: '{{ ucfirst($role->name) }}' }, @endforeach
+                        { value: '{{ $role->name }}', label: '{{ ucfirst($role->name) }}' },
+                    @endforeach
                 ]
             }" class="space-y-4">
                 @csrf
@@ -65,31 +67,96 @@
                     <input type="hidden" name="role" :value="selectedValue">
                 </div>
 
-                {{-- BAGIAN CRUD --}}
+                {{-- HAK AKSES UNTUK STAFF --}}
                 <template x-if="selectedValue === 'staff'">
-                    <div class="mt-6 border-t pt-4">
+                    <div class="mt-6 border-t pt-4 space-y-4">
                         <h3 class="text-gray-800 font-semibold mb-2 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-emerald-600 text-sm">lock_open_right</span>
-                            Hak Akses Modul Barang
+                            <span class="material-symbols-outlined text-emerald-600 text-sm">security</span>
+                            Atur Hak Akses Modul untuk Role Staff
                         </h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                            @foreach ([
-            'barang.create' => 'Tambah Barang',
-            'barang.edit' => 'Edit Barang',
-            'barang.delete' => 'Hapus Barang',
-        ] as $perm => $label)
-                                <label
-                                    class="flex items-center gap-2 bg-gray-50 border p-2 rounded-lg hover:bg-gray-100 transition">
-                                    <input type="checkbox" name="permissions[]" value="{{ $perm }}"
-                                        {{ $user->hasPermissionTo($perm) ? 'checked' : '' }}
-                                        class="rounded text-emerald-600 focus:ring-emerald-500">
-                                    <span class="text-sm text-gray-700">{{ $label }}</span>
-                                </label>
-                            @endforeach
+                        <p class="text-sm text-gray-600">
+                            Pilih hak akses yang ingin diberikan kepada pengguna dengan role <strong>Staff</strong>.
+                            Hak akses ini akan menentukan modul dan fitur apa saja yang dapat diakses oleh pengguna.
+                        </p>
+                        {{-- CARD MODUL BARANG --}}
+                        <div class="border rounded-xl border-gray-300 shadow-sm overflow-hidden hover:border-emerald-400 transition">
+                            <button type="button" @click="openCard === 'barang' ? openCard = null : openCard = 'barang'"
+                                class="w-full flex justify-between items-center px-4 py-3 bg-white hover:bg-emerald-50 transition">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-emerald-600 text-lg">inventory_2</span>
+                                    <span class="font-semibold text-gray-800">Modul Barang</span>
+                                </div>
+                                <svg class="w-5 h-5 text-gray-500 transform transition-transform"
+                                    :class="openCard === 'barang' ? 'rotate-180' : ''" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            <div x-show="openCard === 'barang'" x-transition
+                                class="px-4 pb-4 pt-2 bg-white border-t space-y-2">
+                                <p class="text-sm text-gray-600 mb-2">Pilih hak akses untuk modul Barang:</p>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                    @foreach ([
+                                        'barang.create' => 'Tambah Barang',
+                                        'barang.edit' => 'Edit Barang',
+                                        'barang.delete' => 'Hapus Barang',
+                                    ] as $perm => $label)
+                                        <label
+                                            class="flex items-center gap-2 bg-gray-50 border p-2 rounded-lg border-gray-200 hover:bg-emerald-100 hover:border-emerald-300 transition">
+                                            <input type="checkbox" name="permissions[]" value="{{ $perm }}"
+                                                {{ $user->hasPermissionTo($perm) ? 'checked' : '' }}
+                                                class="rounded text-emerald-600 focus:ring-emerald-500">
+                                            <span class="text-sm text-gray-700">{{ $label }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
                         </div>
+
+                        {{-- CARD MODUL OPNAME --}}
+                        <div class="border rounded-xl shadow-sm overflow-hidden border-gray-300 hover:border-emerald-400 transition">
+                            <button type="button" @click="openCard === 'opname' ? openCard = null : openCard = 'opname'"
+                                class="w-full flex justify-between items-center px-4 py-3 bg-white hover:bg-emerald-50 transition">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-emerald-600 text-lg">fact_check</span>
+                                    <span class="font-semibold text-gray-800">Modul Opname</span>
+                                </div>
+                                <svg class="w-5 h-5 text-gray-500 transform transition-transform"
+                                    :class="openCard === 'opname' ? 'rotate-180' : ''" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            <div x-show="openCard === 'opname'" x-transition
+                                class="px-4 pb-4 pt-2 bg-white border-t space-y-2">
+                                <p class="text-sm text-gray-600 mb-2">Pilih hak akses untuk modul Opname:</p>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                    @foreach ([
+                                        'opname.view' => 'Lihat Opname',
+                                        'opname.create' => 'Input Opname',
+                                        'opname.edit' => 'Edit Opname',
+                                        'opname.delete' => 'Hapus Opname',
+                                    ] as $perm => $label)
+                                        <label
+                                            class="flex items-center gap-2 bg-gray-50 border border-gray-200 p-2 rounded-lg hover:bg-emerald-100 hover:border-emerald-300 transition">
+                                            <input type="checkbox" name="permissions[]" value="{{ $perm }}"
+                                                {{ $user->hasPermissionTo($perm) ? 'checked' : '' }}
+                                                class="rounded text-emerald-600 focus:ring-emerald-500">
+                                            <span class="text-sm text-gray-700">{{ $label }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </template>
 
+                {{-- ADMIN --}}
                 <template x-if="selectedValue === 'admin'">
                     <div class="mt-6 border-t pt-4">
                         <h3 class="text-gray-800 font-semibold mb-2 flex items-center gap-2">
@@ -103,9 +170,9 @@
                 </template>
 
                 {{-- BUTTON --}}
-                <div class="flex justify-end">
+                <div class="flex justify-end mt-6">
                     <button type="submit"
-                        class="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg shadow hover:scale-105 transition">
+                        class="px-4 py-2 bg-emerald-600  text-white rounded-lg hover:bg-emerald-700 transition">
                         Update
                     </button>
                 </div>

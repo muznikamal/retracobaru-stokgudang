@@ -1,7 +1,8 @@
 <!-- Load Google Material Icons -->
 
 
-<aside class="w-64 bg-white fixed inset-y-0 left-0 z-50 md:relative md:translate-x-0">
+<aside class="w-64 bg-white fixed inset-y-0 left-0 z-50 md:relative md:translate-x-0 
+       overflow-y-auto max-h-screen">
     <div class="p-6 border-b bg-emerald-700">
         <h1 class="text-2xl font-bold text-white">RETRACO BARU</h1>
         <p class="mt-1 text-sm italic text-emerald-200">Sistem Stok Gudang</p>
@@ -27,39 +28,45 @@
         @hasanyrole('admin|staff')
             <div>
                 <p class="text-xs font-semibold text-gray-400 uppercase mb-2">Master Data</p>
+
+                {{-- Barang (semua boleh lihat) --}}
                 <a href="{{ route('barang.index') }}"
                     class="flex items-center gap-3 px-4 py-2 rounded-lg transition 
-               {{ request()->routeIs('barang.*')
-                   ? 'bg-emerald-500 text-white shadow-md'
-                   : 'text-gray-700 hover:bg-emerald-100' }}">
+            {{ request()->routeIs('barang.*')
+                ? 'bg-emerald-500 text-white shadow-md'
+                : 'text-gray-700 hover:bg-emerald-100' }}">
                     <span class="material-icons {{ request()->routeIs('barang.*') ? 'text-white' : 'text-gray-500' }}">
                         inventory_2
                     </span>
                     <span>Barang</span>
                 </a>
-                <a href="{{ route('opname.index') }}"
-                    class="flex items-center gap-3 px-4 py-2 rounded-lg transition 
-   {{ request()->routeIs('opname.*')
-       ? 'bg-emerald-500 text-white shadow-md'
-       : 'text-gray-700 hover:bg-emerald-100' }}">
-                    <span class="material-icons {{ request()->routeIs('opname.*') ? 'text-white' : 'text-gray-500' }}">
-                        fact_check
-                    </span>
-                    <span>Opname</span>
-                </a>
-            </div>
-            {{-- @endhasanyrole --}}
 
-            <!-- TRANSAKSI -->
-            {{-- @hasanyrole('admin|staff') --}}
+                {{-- Opname (hanya muncul jika punya permission) --}}
+                @can('opname.view')
+                    <a href="{{ route('opname.index') }}"
+                        class="flex items-center gap-3 px-4 py-2 rounded-lg transition 
+                {{ request()->routeIs('opname.*')
+                    ? 'bg-emerald-500 text-white shadow-md'
+                    : 'text-gray-700 hover:bg-emerald-100' }}">
+                        <span class="material-icons {{ request()->routeIs('opname.*') ? 'text-white' : 'text-gray-500' }}">
+                            fact_check
+                        </span>
+                        <span>Opname</span>
+                    </a>
+                @endcan
+            </div>
+        @endhasanyrole
+
+        {{-- TRANSAKSI --}}
+        @hasanyrole('admin|staff')
             <div>
                 <p class="text-xs font-semibold text-gray-400 uppercase mb-2">Transaksi</p>
 
                 <a href="{{ route('barang-masuk.index') }}"
                     class="flex items-center gap-3 px-4 py-2 rounded-lg transition 
-               {{ request()->routeIs('barang-masuk.*')
-                   ? 'bg-emerald-500 text-white shadow-md'
-                   : 'text-gray-700 hover:bg-emerald-100' }}">
+            {{ request()->routeIs('barang-masuk.*')
+                ? 'bg-emerald-500 text-white shadow-md'
+                : 'text-gray-700 hover:bg-emerald-100' }}">
                     <span
                         class="material-icons {{ request()->routeIs('barang-masuk.*') ? 'text-white' : 'text-gray-500' }}">
                         login
@@ -69,9 +76,9 @@
 
                 <a href="{{ route('barang-keluar.index') }}"
                     class="flex items-center gap-3 px-4 py-2 rounded-lg transition 
-               {{ request()->routeIs('barang-keluar.*')
-                   ? 'bg-emerald-500 text-white shadow-md'
-                   : 'text-gray-700 hover:bg-emerald-100' }}">
+            {{ request()->routeIs('barang-keluar.*')
+                ? 'bg-emerald-500 text-white shadow-md'
+                : 'text-gray-700 hover:bg-emerald-100' }}">
                     <span
                         class="material-icons {{ request()->routeIs('barang-keluar.*') ? 'text-white' : 'text-gray-500' }}">
                         logout
